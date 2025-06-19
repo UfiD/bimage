@@ -6,6 +6,7 @@ toolchain go1.23.10
 
 require (
 	github.com/docker/docker v28.2.2+incompatible
+	github.com/go-chi/chi/v5 v5.2.1
 	github.com/moby/go-archive v0.1.0
 )
 
