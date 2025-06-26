@@ -42,7 +42,7 @@ func (c *Controller) Post(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	res := c.uc.Do(task)
+	res := c.uc.Do(task.Task, task.Language)
 	if err := json.NewEncoder(w).Encode(res); err != nil {
 		http.Error(w, "Internal Error", http.StatusInternalServerError)
 	}

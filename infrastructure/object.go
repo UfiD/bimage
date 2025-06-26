@@ -1,5 +1,5 @@
 package consumer
 
 type Consumer interface {
-	Do(task string) string
+	Do(task, language string) string
 }

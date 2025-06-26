@@ -14,6 +14,6 @@ func New(c consumer.Consumer) *Usecase {
 	}
 }
 
-func (uc *Usecase) Do(task string) string {
-	return uc.Consumer.Do(task)
+func (uc *Usecase) Do(task, language string) string {
+	return uc.Consumer.Do(task, language)
 }

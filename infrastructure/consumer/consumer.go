@@ -1,6 +1,7 @@
 package codeprocessor
 
 import (
+	"bimage/infrastructure/consumer/types"
 	"bytes"
 	"context"
 	"fmt"
@@ -21,7 +22,7 @@ func New() *Consumer {
 	return &Consumer{}
 }
 
-func (c *Consumer) Do(task string) string {
+func (c *Consumer) Do(task, language string) string {
 
 	exeDir, err := os.Getwd()
 	if err != nil {
@@ -35,25 +36,15 @@ func (c *Consumer) Do(task string) string {
 	}
 	defer os.RemoveAll(tempDir)
 
-	goFilePath := filepath.Join(tempDir, "hello.go")
+	fileName := types.SelectFileExtension(language)
+
+	goFilePath := filepath.Join(tempDir, fileName)
 	err = os.WriteFile(goFilePath, []byte(task), 0644)
 	if err != nil {
 		panic(fmt.Errorf("не удалось создать Go файл: %v", err))
 	}
 
-	dockerfileContent := `FROM golang:1.21-alpine
-
-WORKDIR /app
-
-# Копируем исходный код
-COPY hello.go .
-
-# Компилируем программу
-RUN go build -o hello hello.go
-
-# Запускаем программу при старте контейнера
-CMD ["./hello"]
-`
+	dockerfileContent := types.GetDockerfileContent(language)
 
 	dockerfilePath := filepath.Join(tempDir, "Dockerfile")
 	err = os.WriteFile(dockerfilePath, []byte(dockerfileContent), 0644)
@@ -76,7 +67,7 @@ CMD ["./hello"]
 		panic(fmt.Errorf("не удалось создать архив для сборки: %v", err))
 	}
 
-	imageName := "go-hello-world"
+	imageName := "go-task"
 	buildResponse, err := cli.ImageBuild(ctx, buildContext, build.ImageBuildOptions{
 		Tags:       []string{imageName},
 		Remove:     true,
